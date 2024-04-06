@@ -22,9 +22,14 @@ func Parse(htmlParse *html.Tokenizer) ([]Link, error) {
 			break
 		}
 		nodeData := htmlParse.Token()
-		//fmt.Println(nodeData.Type.String())
 		if nodeData.Type.String() == "StartTag" && nodeData.Data == "a" {
-			link := Link{Href: nodeData.Attr[0].Val}
+			link := Link{}
+			for _, attribute := range nodeData.Attr {
+				if attribute.Key == "href" {
+					link.Href = attribute.Val
+					break
+				}
+			}
 			link.Text = linkText(htmlParse)
 			links = append(links, link)
 		}
