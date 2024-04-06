@@ -1,6 +1,7 @@
 package link
 
 import (
+	"fmt"
 	"golang.org/x/net/html"
 	"unicode"
 )
@@ -26,6 +27,7 @@ func Parse(htmlParse *html.Tokenizer) ([]Link, error) {
 			link := Link{}
 			for _, attribute := range nodeData.Attr {
 				if attribute.Key == "href" {
+					fmt.Println(attribute.Val)
 					link.Href = attribute.Val
 					break
 				}
@@ -46,20 +48,14 @@ func checkIfEnd(char rune, st int, i int, n int) bool {
 
 func linkText(htmlParse *html.Tokenizer) string {
 	var text string = ""
-	var cnt int = 1
 	for {
-		if cnt == 0 {
-			break
-		}
 		nextnode := htmlParse.Next()
 		if nextnode == html.ErrorToken {
 			break
 		}
 		nodeData := htmlParse.Token()
-		if nodeData.Type.String() == "StartTag" {
-			cnt++
-		} else if nodeData.Type.String() == "EndTag" {
-			cnt--
+		if nodeData.Type.String() == "EndTag" && nodeData.Data == "a" {
+			break
 		} else if nodeData.Type.String() == "Comment" {
 			continue
 		} else {
